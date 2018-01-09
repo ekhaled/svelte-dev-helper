@@ -1,8 +1,9 @@
 # svelte-dev-helper
 Helper for svelte components to ease development.
-Used under the hood by [svelte-hot-loader](https://github.com/ekhaled/svelte-hot-loader)
+Used under the hood by [svelte-hot-loader](https://github.com/ekhaled/svelte-hot-loader).
 
-##Usage
+
+## Usage
 
 This is meant to be used under the hood for creating a build toolchain, or a dev helper based on [Svelte](https://svelte.technology/) components.
 
