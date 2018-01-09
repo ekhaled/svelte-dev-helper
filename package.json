@@ -4,6 +4,7 @@
   "description": "Helper for svelte components to ease development",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint index.js lib/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/ekhaled/svelte-dev-helper/issues"
   },
-  "homepage": "https://github.com/ekhaled/svelte-dev-helper#readme"
+  "homepage": "https://github.com/ekhaled/svelte-dev-helper#readme",
+  "devDependencies": {
+    "eslint": "^4.15.0"
+  }
 }
