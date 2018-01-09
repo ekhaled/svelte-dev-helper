@@ -6,7 +6,7 @@
   "scripts": {
     "all":"npm run lint && npm run test",
     "lint": "eslint index.js lib/ test/*.spec.js",
-    "test": "mocha --require reify --full-trace --check-leaks test/*.spec.js --compilers js:buble/register"
+    "test": "mocha --require buble/register --require reify --full-trace --check-leaks test/*.spec.js"
   },
   "repository": {
     "type": "git",

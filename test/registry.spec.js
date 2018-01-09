@@ -6,7 +6,7 @@ const Registry = require('../lib/registry').default;
 chai.use(sinonChai);
 const { expect } = chai;
 
-describe('registry', () => {
+describe('Registry', () => {
 
   const obj = { a: 'a' },
     inst = { id:'id2' };
