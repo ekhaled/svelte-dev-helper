@@ -4,8 +4,9 @@
   "description": "Helper for svelte components to ease development",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint index.js lib/",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "all":"npm run lint && npm run test",
+    "lint": "eslint index.js lib/ test/*.spec.js",
+    "test": "mocha --require reify --full-trace --check-leaks test/*.spec.js --compilers js:buble/register"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,13 @@
   },
   "homepage": "https://github.com/ekhaled/svelte-dev-helper#readme",
   "devDependencies": {
-    "eslint": "^4.15.0"
+    "buble": "^0.18.0",
+    "chai": "^4.1.2",
+    "eslint": "^4.15.0",
+    "eslint-plugin-mocha": "^4.11.0",
+    "mocha": "^4.1.0",
+    "reify": "^0.13.6",
+    "sinon": "^4.1.4",
+    "sinon-chai": "^2.14.0"
   }
 }
