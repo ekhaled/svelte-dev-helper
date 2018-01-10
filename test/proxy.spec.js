@@ -5,9 +5,12 @@ const { spy } = require('sinon');
 
 const { configure, getConfig, Registry, createProxy } = require('../index');
 const Component = require('./fixtures/mockComponent').default;
+const ErrorComponent = require('./fixtures/mockComponentWithError').default;
 
 chai.use(sinonChai);
 const { expect } = chai;
+
+const noop = function() {};
 
 describe('Config', function() {
 
@@ -30,10 +33,12 @@ describe('Proxy', function() {
 
   const id = 'fixtures/MockComponent.html';
   const allMethods = 'get,fire,observe,on,set,teardown,_recompute,_set,_mount,_unmount,destroy,_register,_rerender'.split(',');
+  const straightProxiedMethods = allMethods.slice(0,7);
   const allProps = '_fragment,_slotted,root,store'.split(',');
 
   const SpiedComponent = spy(Component),
-    SpiedComponent2 = spy(Component);
+    SpiedComponent2 = spy(Component),
+    SpiedErrorComponent = spy(ErrorComponent);
 
   Registry.set(id, {
     rollback: null,
@@ -72,8 +77,17 @@ describe('Proxy', function() {
 
   it('wrapped component contains right methods', function() {
 
-    allMethods.forEach((prop) => {
-      expect(typeof wrappedComponent[prop]).to.eq('function');
+    allMethods.forEach((method) => {
+      expect(typeof wrappedComponent[method]).to.eq('function');
+    });
+
+  });
+
+  it('wrapped component forwards proxied method calls', function() {
+
+    straightProxiedMethods.forEach((method) => {
+      wrappedComponent[method]();
+      expect(methodSpies[method]).to.be.calledOnce;
     });
 
   });
@@ -103,6 +117,37 @@ describe('Proxy', function() {
 
     expect(wrappedComponent.proxyTarget).to.be.instanceOf(SpiedComponent2);
 
+  });
+
+  it('rolls back to previous good component on component error', function() {
+
+    //swap component in registry
+    let item = Registry.get(id);
+    item.rollback = SpiedComponent2;
+    item.component = SpiedErrorComponent;
+    Registry.set(id, item);
+
+    //shim console
+    const _consolewarn = console.warn;
+    const _consoleinfo = console.info;
+    console.warn = noop;
+    console.info = noop;
+
+    wrappedComponent._rerender();
+
+    //restore console
+    console.warn = _consolewarn;
+    console.info = _consoleinfo;
+
+    expect(SpiedErrorComponent).to.be.calledOnce;
+    expect(SpiedComponent2).to.be.calledTwice;
+    expect(wrappedComponent.proxyTarget).to.be.instanceOf(SpiedComponent2);
+
+  });
+
+  it('rollback updates component in registry', function() {
+    const item = Registry.get(id);
+    expect(item.component).to.eq(SpiedComponent2);
   });
 
   it('removes itself from Registry and cleans up on destruction', function() {
