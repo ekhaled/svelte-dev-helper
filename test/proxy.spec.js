@@ -1,10 +1,9 @@
-import { createProxy, Registry } from '../index';
-
 /* global describe, it */
 const chai = require('chai');
 const sinonChai = require('sinon-chai');
 const { spy } = require('sinon');
-const devHelper = require('../index');
+
+const { configure, getConfig, Registry, createProxy } = require('../index');
 const Component = require('./fixtures/mockComponent').default;
 
 chai.use(sinonChai);
@@ -12,17 +11,17 @@ const { expect } = chai;
 
 describe('Config', function() {
 
-  devHelper.configure({ x: 'y' });
+  configure({ x: 'y' });
 
   it('allows configuration', function() {
-    let config = devHelper.getConfig();
+    let config = getConfig();
     expect(config.noPreserveState).to.be.false;
 
-    devHelper.configure({ noPreserveState: true });
-    config = devHelper.getConfig();
+    configure({ noPreserveState: true });
+    config = getConfig();
     expect(config.noPreserveState).to.be.true;
 
-    devHelper.configure({ noPreserveState: true });
+    configure({ noPreserveState: true });
   });
 
 });
@@ -30,6 +29,8 @@ describe('Config', function() {
 describe('Proxy', function() {
 
   const id = 'fixtures/MockComponent.html';
+  const allMethods = 'get,fire,observe,on,set,teardown,_recompute,_set,_mount,_unmount,destroy,_register,_rerender'.split(',');
+  const allProps = '_fragment,_slotted,root,store'.split(',');
 
   const SpiedComponent = spy(Component);
 
@@ -41,6 +42,9 @@ describe('Proxy', function() {
 
   const Wrapped = createProxy(id),
     wrappedComponent = new Wrapped({});
+
+  const methodSpies = {};
+  allMethods.forEach((method) => { methodSpies[method] = spy(wrappedComponent, method); });
 
   it('should contain the right component and instance in Registry', function() {
     const item = Registry.get(id);
@@ -55,11 +59,10 @@ describe('Proxy', function() {
 
   it('wrapped component contains right props', function() {
 
-    '_fragment,_slotted,root,store'.split(',')
-      .forEach((prop) => {
-        expect(wrappedComponent[prop]).not.to.be.undefined;
-        expect(wrappedComponent[prop]).to.eq(wrappedComponent.proxyTarget[prop]);
-      });
+    allProps.forEach((prop) => {
+      expect(wrappedComponent[prop]).not.to.be.undefined;
+      expect(wrappedComponent[prop]).to.eq(wrappedComponent.proxyTarget[prop]);
+    });
 
     expect(wrappedComponent._debugName).to.eq('<MockComponent>');
     expect(wrappedComponent.id).to.eq(id);
@@ -68,15 +71,36 @@ describe('Proxy', function() {
 
   it('wrapped component contains right methods', function() {
 
-    'get,fire,observe,on,set,teardown,_recompute,_set,_mount,_unmount,destroy,_register,_rerender'.split(',')
-      .forEach((prop) => {
-        expect(typeof wrappedComponent[prop]).to.eq('function');
-      });
+    allMethods.forEach((prop) => {
+      expect(typeof wrappedComponent[prop]).to.eq('function');
+    });
 
   });
 
-  it('removes itself from Registry on destruction', function() {
-    wrappedComponent.destroy(true, true);
+  it('wrapped component mounts properly', function() {
+    expect(wrappedComponent.__mounted).to.be.false;
+
+    // eslint-disable-next-line no-undef
+    wrappedComponent._mount(document.body);
+    expect(methodSpies._mount).to.be.calledOnce;
+
+    expect(wrappedComponent.__mounted).to.be.true;
+    expect(wrappedComponent.__insertionPoint.__component__).to.eq(wrappedComponent);
+  });
+
+  it('removes itself from Registry and cleans up on destruction', function() {
+
+    wrappedComponent._unmount();
+    expect(methodSpies._unmount).to.be.calledOnce;
+
+    expect(wrappedComponent.__mounted).to.be.false;
+
+    wrappedComponent.destroy();
+    expect(methodSpies.destroy).to.be.calledOnce;
+
+    expect(wrappedComponent.__insertionPoint.__component__).to.be.null;
+
+
     const item = Registry.get(id);
     expect(item.component).to.eq(SpiedComponent);
     expect(item.instances[0]).to.be.undefined;
