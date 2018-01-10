@@ -32,7 +32,8 @@ describe('Proxy', function() {
   const allMethods = 'get,fire,observe,on,set,teardown,_recompute,_set,_mount,_unmount,destroy,_register,_rerender'.split(',');
   const allProps = '_fragment,_slotted,root,store'.split(',');
 
-  const SpiedComponent = spy(Component);
+  const SpiedComponent = spy(Component),
+    SpiedComponent2 = spy(Component);
 
   Registry.set(id, {
     rollback: null,
@@ -88,6 +89,22 @@ describe('Proxy', function() {
     expect(wrappedComponent.__insertionPoint.__component__).to.eq(wrappedComponent);
   });
 
+  it('wrapped component can be re rendered', function() {
+
+    //swap component in registry
+    let item = Registry.get(id);
+    item.component = SpiedComponent2;
+    Registry.set(id, item);
+
+    wrappedComponent._rerender();
+
+    expect(SpiedComponent2).to.be.calledOnce;
+    expect(methodSpies._mount).to.be.calledTwice;
+
+    expect(wrappedComponent.proxyTarget).to.be.instanceOf(SpiedComponent2);
+
+  });
+
   it('removes itself from Registry and cleans up on destruction', function() {
 
     wrappedComponent._unmount();
@@ -96,13 +113,13 @@ describe('Proxy', function() {
     expect(wrappedComponent.__mounted).to.be.false;
 
     wrappedComponent.destroy();
-    expect(methodSpies.destroy).to.be.calledOnce;
+    expect(methodSpies.destroy).to.be.called;
 
     expect(wrappedComponent.__insertionPoint.__component__).to.be.null;
 
 
     const item = Registry.get(id);
-    expect(item.component).to.eq(SpiedComponent);
+    expect(item.component).to.eq(SpiedComponent2);
     expect(item.instances[0]).to.be.undefined;
     expect(item.instances.length).to.eq(0);
   });
