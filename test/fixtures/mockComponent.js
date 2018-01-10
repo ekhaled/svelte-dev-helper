@@ -1,6 +1,17 @@
+function create_main_fragment() {
+  return {
+    c: function create() { },
+    h: function hydrate() { },
+    m: function mount() { },
+    p: function update() { },
+    u: function unmount() { },
+    d: function destroy() { }
+  }
+}
+
 export default class{
   constructor() {
-    this._fragment = {};
+    this._fragment = create_main_fragment();
     this._slotted = {};
     this.root = {};
     this.store = {};
