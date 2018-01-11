@@ -33,7 +33,8 @@ describe('Proxy', function() {
 
   const id = 'fixtures\\mockComponent.html';
   const allMethods = 'get,fire,observe,on,set,teardown,_recompute,_set,_mount,_unmount,destroy,_register,_rerender'.split(',');
-  const straightProxiedMethods = allMethods.slice(0,7);
+  const straightProxiedMethods = allMethods.slice(0, 7);
+  const proxiedMethods = allMethods.slice(0, 10);
   const allProps = 'refs,_fragment,_slotted,root,store'.split(',');
 
   const SpiedComponent = spy(Component),
@@ -49,8 +50,8 @@ describe('Proxy', function() {
   const Wrapped = createProxy(id),
     wrappedComponent = new Wrapped({});
 
-  const methodSpies = {};
-  allMethods.forEach((method) => { methodSpies[method] = spy(wrappedComponent, method); });
+  let methodSpies = {};
+  proxiedMethods.forEach((method) => { methodSpies[method] = spy(wrappedComponent.proxyTarget, method); });
 
   it('should contain the right component and instance in Registry', function() {
     const item = Registry.get(id);
@@ -112,8 +113,11 @@ describe('Proxy', function() {
 
     wrappedComponent._rerender();
 
+    //re-spy the methods
+    methodSpies = {};
+    proxiedMethods.forEach((method) => { methodSpies[method] = spy(wrappedComponent.proxyTarget, method); });
+
     expect(SpiedComponent2).to.be.calledOnce;
-    expect(methodSpies._mount).to.be.calledTwice;
 
     expect(wrappedComponent.proxyTarget).to.be.instanceOf(SpiedComponent2);
 
@@ -134,6 +138,9 @@ describe('Proxy', function() {
     console.info = noop;
 
     wrappedComponent._rerender();
+    //re-spy the methods
+    methodSpies = {};
+    proxiedMethods.forEach((method) => { methodSpies[method] = spy(wrappedComponent.proxyTarget, method); });
 
     //restore console
     console.warn = _consolewarn;
@@ -158,7 +165,6 @@ describe('Proxy', function() {
     expect(wrappedComponent.__mounted).to.be.false;
 
     wrappedComponent.destroy();
-    expect(methodSpies.destroy).to.be.called;
 
     expect(wrappedComponent.__insertionPoint.__component__).to.be.null;
 
