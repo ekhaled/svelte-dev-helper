@@ -35,6 +35,7 @@ describe('Proxy', function() {
   const allMethods = 'get,fire,observe,on,set,teardown,_recompute,_set,_mount,_unmount,destroy,_register,_rerender'.split(',');
   const straightProxiedMethods = allMethods.slice(0, 7);
   const proxiedMethods = allMethods.slice(0, 10);
+  const customMethods = 'customMethod,anotherCustomMethod'.split(',');
   const allProps = 'refs,_fragment,_slotted,root,store'.split(',');
 
   const SpiedComponent = spy(Component),
@@ -52,6 +53,9 @@ describe('Proxy', function() {
 
   let methodSpies = {};
   proxiedMethods.forEach((method) => { methodSpies[method] = spy(wrappedComponent.proxyTarget, method); });
+
+  const customMethodSpies = {};
+  customMethods.forEach((method) => { customMethodSpies[method] = spy(wrappedComponent.proxyTarget, method); });
 
   it('should contain the right component and instance in Registry', function() {
     const item = Registry.get(id);
@@ -89,6 +93,19 @@ describe('Proxy', function() {
     straightProxiedMethods.forEach((method) => {
       wrappedComponent[method]();
       expect(methodSpies[method]).to.be.calledOnce;
+    });
+
+  });
+
+  it('handles custom methods', function() {
+
+    customMethods.forEach((method) => {
+      expect(typeof wrappedComponent[method]).to.eq('function');
+    });
+
+    customMethods.forEach((method) => {
+      wrappedComponent[method]();
+      expect(customMethodSpies[method]).to.be.calledOnce;
     });
 
   });

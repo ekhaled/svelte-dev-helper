@@ -17,6 +17,8 @@ export default class{
     this.root = {};
     this.store = {};
   }
+  customMethod() {}
+  anotherCustomMethod() {}
   get() {}
   fire() {}
   observe() {}
