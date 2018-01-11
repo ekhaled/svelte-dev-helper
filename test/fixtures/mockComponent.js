@@ -11,6 +11,7 @@ function create_main_fragment() {
 
 export default class{
   constructor() {
+    this.refs = {};
     this._fragment = create_main_fragment();
     this._slotted = {};
     this.root = {};

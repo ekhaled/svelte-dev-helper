@@ -34,7 +34,7 @@ describe('Proxy', function() {
   const id = 'fixtures\\mockComponent.html';
   const allMethods = 'get,fire,observe,on,set,teardown,_recompute,_set,_mount,_unmount,destroy,_register,_rerender'.split(',');
   const straightProxiedMethods = allMethods.slice(0,7);
-  const allProps = '_fragment,_slotted,root,store'.split(',');
+  const allProps = 'refs,_fragment,_slotted,root,store'.split(',');
 
   const SpiedComponent = spy(Component),
     SpiedComponent2 = spy(Component),
