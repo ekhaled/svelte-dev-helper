@@ -1,6 +1,6 @@
 {
   "name": "svelte-dev-helper",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Helper for svelte components to ease development",
   "main": "index.js",
   "scripts": {
