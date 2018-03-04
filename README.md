@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/ekhaled/svelte-dev-helper.svg?branch=master)](https://travis-ci.org/ekhaled/svelte-dev-helper)
 
 Helper for svelte components to ease development.
-Used under the hood by [svelte-hot-loader](https://github.com/ekhaled/svelte-hot-loader).
+Used under the hood by [svelte-loader](https://github.com/sveltejs/svelte-loader).
 
 
 ## Usage
