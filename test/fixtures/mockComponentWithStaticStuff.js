@@ -1,3 +1,8 @@
+function setup(component) {
+  component.foo = 42;
+  component.bar = function () {}
+}
+
 function create_main_fragment() {
   return {
     c: function create() { },
@@ -32,8 +37,8 @@ let cls = class{
   destroy() {}
 }
 
-cls.preload = function(){
 
-}
+setup(cls);
+cls.preload = function () {}
 
 export default cls;
