@@ -6,6 +6,7 @@ const { spy } = require('sinon');
 const { configure, getConfig, Registry, createProxy } = require('../index');
 const Component = require('./fixtures/mockComponent').default;
 const ErrorComponent = require('./fixtures/mockComponentWithError').default;
+const PreloadComponent = require('./fixtures/mockComponentWithPreload').default;
 
 chai.use(sinonChai);
 const { expect } = chai;
@@ -32,6 +33,7 @@ describe('Config', function() {
 describe('Proxy', function() {
 
   const id = 'fixtures\\mockComponent.html';
+  const idPreload = 'fixtures\\mockComponentWithPreload.html';
   const allMethods = 'get,fire,observe,on,set,teardown,_recompute,_set,_mount,_unmount,destroy,_register,_rerender'.split(',');
   const straightProxiedMethods = allMethods.slice(0, 7);
   const proxiedMethods = allMethods.slice(0, 10);
@@ -40,7 +42,8 @@ describe('Proxy', function() {
 
   const SpiedComponent = spy(Component),
     SpiedComponent2 = spy(Component),
-    SpiedErrorComponent = spy(ErrorComponent);
+    SpiedErrorComponent = spy(ErrorComponent),
+    SpiedPreload = spy(PreloadComponent, 'preload');
 
   Registry.set(id, {
     rollback: null,
@@ -48,14 +51,26 @@ describe('Proxy', function() {
     instances: []
   });
 
+  Registry.set(idPreload, {
+    rollback: null,
+    component: PreloadComponent,
+    instances: []
+  });
+
   const Wrapped = createProxy(id),
-    wrappedComponent = new Wrapped({});
+    wrappedComponent = new Wrapped({}),
+    PreloadWrapped = createProxy(idPreload);
 
   let methodSpies = {};
   proxiedMethods.forEach((method) => { methodSpies[method] = spy(wrappedComponent.proxyTarget, method); });
 
   const customMethodSpies = {};
   customMethods.forEach((method) => { customMethodSpies[method] = spy(wrappedComponent.proxyTarget, method); });
+
+  it('should forward calls to static preload method', function() {
+    PreloadWrapped.preload();
+    expect(SpiedPreload).to.be.calledOnce;
+  });
 
   it('should contain the right component and instance in Registry', function() {
     const item = Registry.get(id);
