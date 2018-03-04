@@ -60,7 +60,7 @@ describe('Proxy', function() {
 
   const Wrapped = createProxy(id),
     wrappedComponent = new Wrapped({}),
-    PreloadWrapped = createProxy(idStatic);
+    WrappedWithStatic = createProxy(idStatic);
 
   let methodSpies = {};
   proxiedMethods.forEach((method) => { methodSpies[method] = spy(wrappedComponent.proxyTarget, method); });
@@ -69,14 +69,14 @@ describe('Proxy', function() {
   customMethods.forEach((method) => { customMethodSpies[method] = spy(wrappedComponent.proxyTarget, method); });
 
   it('should forward calls to static methods', function() {
-    PreloadWrapped.preload();
-    PreloadWrapped.bar();
+    WrappedWithStatic.preload();
+    WrappedWithStatic.bar();
     expect(SpiedPreload).to.be.calledOnce;
     expect(SpiedBar).to.be.calledOnce;
   });
 
   it('should forward static properties', function() {
-    expect(PreloadWrapped.foo).to.eq(42);
+    expect(WrappedWithStatic.foo).to.eq(42);
   });
 
   it('should contain the right component and instance in Registry', function() {
