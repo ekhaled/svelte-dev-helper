@@ -16,6 +16,7 @@ export default class{
     this._slotted = {};
     this.root = {};
     this.store = {};
+    this._bind = function() {};
   }
   customMethod() {}
   anotherCustomMethod() {}

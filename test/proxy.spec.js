@@ -34,9 +34,9 @@ describe('Proxy', function() {
 
   const id = 'fixtures\\mockComponent.html';
   const idStatic = 'fixtures\\mockComponentWithPreload.html';
-  const allMethods = 'get,fire,observe,on,set,teardown,_recompute,_set,_mount,_unmount,destroy,_register,_rerender'.split(',');
-  const straightProxiedMethods = allMethods.slice(0, 7);
-  const proxiedMethods = allMethods.slice(0, 10);
+  const allMethods = 'get,fire,observe,on,set,teardown,_recompute,_bind,_mount,_unmount,destroy,_register,_rerender'.split(',');
+  const straightProxiedMethods = allMethods.slice(0, 8);
+  const proxiedMethods = allMethods.slice(0, 11);
   const customMethods = 'customMethod,anotherCustomMethod'.split(',');
   const allProps = 'refs,_fragment,_slotted,root,store'.split(',');
 
