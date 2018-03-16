@@ -214,4 +214,31 @@ describe('Proxy', function() {
     expect(item.instances.length).to.eq(0);
   });
 
+  it('rerenders components with computed properties (#6)', function() {
+
+
+    const Component = require('./fixtures/mockComponentWithComputed').default;
+
+    const id = 'computedComponent';
+
+    Registry.set(id, {
+      rollback: null,
+      component: Component,
+      instances: []
+    });
+
+    // eslint-disable-next-line no-undef
+    const target = document.body;
+    const WrappedComponent = createProxy(id);
+    const wrappedComponent = new WrappedComponent({ target });
+    // eslint-disable-next-line no-undef
+    wrappedComponent._mount(target);
+
+    configure({ noPreserveState: false });
+    wrappedComponent._rerender();
+    configure({ noPreserveState: true });
+    wrappedComponent._rerender();
+
+  });
+
 });
