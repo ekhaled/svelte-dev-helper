@@ -216,20 +216,8 @@ describe('Proxy', function() {
 
   it('rerenders components with computed properties (#6)', function() {
 
-    const { create } = require('svelte');
 
-    const Component = create(`
-      {{test}}
-      <script>
-      export default {
-        data: () => ({ x: 0 }),
-        computed: { test: x => x * 2 },
-      }
-      </script>
-    `, {
-      format: 'cjs',
-      dev: true,
-    });
+    const Component = require('./fixtures/mockComponentWithComputed').default;
 
     const id = 'computedComponent';
 
