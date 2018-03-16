@@ -216,7 +216,7 @@ describe('Proxy', function() {
 
   it('rerenders components with computed properties (#6)', function() {
 
-    import {compile, create} from 'svelte';
+    const { create } = require('svelte');
 
     const Component = create(`
       {{test}}
@@ -239,11 +239,12 @@ describe('Proxy', function() {
       instances: []
     });
 
-    const WrappedComponent = createProxy(id)
-    const wrappedComponent = new WrappedComponent({
-      target: window.document.body,
-    });
-    wrappedComponent._mount(document.body);
+    // eslint-disable-next-line no-undef
+    const target = document.body;
+    const WrappedComponent = createProxy(id);
+    const wrappedComponent = new WrappedComponent({ target });
+    // eslint-disable-next-line no-undef
+    wrappedComponent._mount(target);
 
     configure({ noPreserveState: false });
     wrappedComponent._rerender();
