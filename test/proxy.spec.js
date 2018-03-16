@@ -214,4 +214,42 @@ describe('Proxy', function() {
     expect(item.instances.length).to.eq(0);
   });
 
+  it('rerenders components with computed properties (#6)', function() {
+
+    import {compile, create} from 'svelte';
+
+    const Component = create(`
+      {{test}}
+      <script>
+      export default {
+        data: () => ({ x: 0 }),
+        computed: { test: x => x * 2 },
+      }
+      </script>
+    `, {
+      format: 'cjs',
+      dev: true,
+    });
+
+    const id = 'computedComponent';
+
+    Registry.set(id, {
+      rollback: null,
+      component: Component,
+      instances: []
+    });
+
+    const WrappedComponent = createProxy(id)
+    const wrappedComponent = new WrappedComponent({
+      target: window.document.body,
+    });
+    wrappedComponent._mount(document.body);
+
+    configure({ noPreserveState: false });
+    wrappedComponent._rerender();
+    configure({ noPreserveState: true });
+    wrappedComponent._rerender();
+
+  });
+
 });
