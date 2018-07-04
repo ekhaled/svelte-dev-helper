@@ -1,5 +1,8 @@
 # Changelog
 
+###v1.1.8
+ - fix forwarded events from child components not being re-bound on reload [#10](https://github.com/ekhaled/svelte-dev-helper/issues/10)
+
 ###v1.1.7
  - fix handling of computed props that depend on other computed props [#8](https://github.com/ekhaled/svelte-dev-helper/issues/8)
 
